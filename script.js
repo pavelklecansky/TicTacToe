@@ -10,20 +10,19 @@ const Player = (name, symbol) => {
 const gameBoard = (() => {
   //Default values
   const board = [
-    ["0,0", "0,1", "0,2"],
-    ["1,0", "1,1", "1,2"],
-    ["2,0", "2,1", "2,2"],
+    ["", "", ""],
+    ["", "", ""],
+    ["", "", ""],
   ];
+
+  const winningPosition = ["123", "456", "789", "147", "258", "369", "159", "357"];
 
   const getBoard = () => board.map((inner) => inner.splice);
 
-  const validCoordinets = (coordinets) => {
-    if (!coordinets.hasOwnProperty("x") || !coordinets.hasOwnProperty("y")) {
-      return false;
-    }
-    const x = coordinets.x;
-    const y = coordinets.y;
-    if (isNaN(x) || isNaN(y) || !(x >= 0 && x <= 2) || !(y >= 0 && y <= 2)) {
+  const checkForWin = () => {};
+
+  const validPosition = (position) => {
+    if (isNaN(position) || !(position >= 1 && position <= 9)) {
       return false;
     }
 
@@ -32,23 +31,52 @@ const gameBoard = (() => {
 
   const validSymbol = (symbol) => symbol === "X" || symbol === "O";
 
-  const taken = (coordinets) => {
-    const x = coordinets.x;
-    const y = coordinets.y;
+  const taken = (position) => {
+    const { x, y } = positionToCoordinets(position);
     const mark = board[x][y];
     return mark === "X" || mark === "O";
   };
 
-  const setMark = (coordinets, symbol) => {
-    if (!validCoordinets(coordinets) || !validSymbol(symbol) || taken(coordinets)) {
+  const positionToCoordinets = (position) => {
+    switch (position) {
+      case 1:
+        return { x: 0, y: 0 };
+      case 2:
+        return { x: 0, y: 1 };
+      case 3:
+        return { x: 0, y: 2 };
+      case 4:
+        return { x: 1, y: 0 };
+      case 5:
+        return { x: 1, y: 1 };
+      case 6:
+        return { x: 1, y: 2 };
+      case 7:
+        return { x: 2, y: 0 };
+      case 8:
+        return { x: 2, y: 1 };
+      case 9:
+        return { x: 2, y: 2 };
+    }
+  };
+
+  /**
+   *
+   * @param position = position in grid | 1 2 3 |
+   *                                    | 4 5 6 |
+   *                                    | 7 8 9 |
+   *
+   */
+  const setMark = (position, symbol) => {
+    if (!validPosition(position) || !validSymbol(symbol) || taken(position)) {
       console.log("Bad input");
       return;
     }
 
-    const x = coordinets.x;
-    const y = coordinets.y;
+    const { x, y } = positionToCoordinets(position);
 
     board[x][y] = symbol;
+    //  checkForWin();
   };
 
   const printBoard = () => {
@@ -62,6 +90,6 @@ const gameBoard = (() => {
 })();
 
 const playerX = Player("Pavel", "X");
-playerX.setMark({ x: 1, y: 1 }, gameBoard);
+playerX.setMark(5, gameBoard);
 gameBoard.printBoard();
-playerX.setMark({ x: 1, y: 1 }, gameBoard);
+playerX.setMark(5, gameBoard);
