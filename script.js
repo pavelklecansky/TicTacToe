@@ -6,7 +6,6 @@ const Player = (name, symbol) => {
 
   return { getName, getSymbol, setMark };
 };
-
 const gameBoard = (() => {
   //Default values
   const board = [
@@ -15,11 +14,36 @@ const gameBoard = (() => {
     ["", "", ""],
   ];
 
+  let xSymbolPositons = [];
+  let oSymbolPositons = [];
+
   const winningPosition = ["123", "456", "789", "147", "258", "369", "159", "357"];
 
-  const getBoard = () => board.map((inner) => inner.splice);
+  const getBoard = () => board;
 
-  const checkForWin = () => {};
+  const isBoardFull = () => xSymbolPositons.length + oSymbolPositons.length === 9;
+
+  const checkForWin = () => {
+    for (const winning of winningPosition) {
+      let arrayOfWinning = winning.split("");
+      let xWin = arrayOfWinning.every((el) => {
+        return xSymbolPositons.indexOf(el) !== -1;
+      });
+      if (xWin) {
+        return "X";
+      }
+      let oWin = arrayOfWinning.every((el) => {
+        return oSymbolPositons.indexOf(el) !== -1;
+      });
+      if (oWin) {
+        return "O";
+      }
+    }
+
+    if (isBoardFull()) {
+      return "Tie";
+    }
+  };
 
   const validPosition = (position) => {
     if (isNaN(position) || !(position >= 1 && position <= 9)) {
@@ -75,21 +99,41 @@ const gameBoard = (() => {
 
     const { x, y } = positionToCoordinets(position);
 
+    if (symbol === "X") {
+      xSymbolPositons.push(String(position));
+    } else {
+      oSymbolPositons.push(String(position));
+    }
+
     board[x][y] = symbol;
-    //  checkForWin();
+    const win = checkForWin();
+    console.log(win);
   };
 
-  const printBoard = () => {
+  return { getBoard, setMark };
+})();
+
+const displayController = (() => {
+  const printBoard = (board) => {
     console.log("Board:");
     board.map((inner) => {
       console.log(inner);
     });
   };
 
-  return { getBoard, setMark, printBoard };
+  return { printBoard };
 })();
 
 const playerX = Player("Pavel", "X");
-playerX.setMark(5, gameBoard);
-gameBoard.printBoard();
-playerX.setMark(5, gameBoard);
+const playerO = Player("Nepavel", "O");
+playerX.setMark(6, gameBoard);
+playerO.setMark(4, gameBoard);
+playerO.setMark(5, gameBoard);
+playerO.setMark(1, gameBoard);
+playerX.setMark(2, gameBoard);
+playerO.setMark(3, gameBoard);
+playerX.setMark(7, gameBoard);
+playerO.setMark(8, gameBoard);
+playerX.setMark(9, gameBoard);
+
+displayController.printBoard(gameBoard.getBoard());
