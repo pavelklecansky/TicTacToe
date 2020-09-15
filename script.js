@@ -116,8 +116,7 @@ const gameBoard = (() => {
    */
   const setMark = (position, symbol) => {
     if (!validPosition(position) || !validSymbol(symbol) || taken(position)) {
-      console.log("Bad input");
-      return;
+      return false;
     }
 
     const { x, y } = positionToCoordinets(position);
@@ -129,8 +128,8 @@ const gameBoard = (() => {
     }
 
     board[x][y] = symbol;
-    const win = checkForWin();
-    console.log(win);
+    displayController.displayWinner(checkForWin());
+    return true;
   };
 
   return { getBoard, setMark };
@@ -138,6 +137,22 @@ const gameBoard = (() => {
 
 const displayController = (() => {
   const grid = document.querySelector(".tic-tac-toe-grid");
+
+  const displayWinner = (winSequence) => {
+    if (winSequence) {
+      switch (winSequence) {
+        case "X":
+          alert("Winner is X");
+          break;
+        case "O":
+          alert("Winner is O");
+          break;
+        default:
+          alert("It a tie");
+          break;
+      }
+    }
+  };
 
   const printBoard = (board) => {
     console.log("Board:");
@@ -151,9 +166,10 @@ const displayController = (() => {
     div.innerText = innerText;
     div.addEventListener("click", () => {
       if (isGameStarted) {
-        div.innerHTML = currentPlayer.getSymbol() + position;
-        currentPlayer.setMark(position, gameBoard);
-        toggleCurrentPlayer();
+        if (currentPlayer.setMark(position, gameBoard)) {
+          div.innerHTML = currentPlayer.getSymbol() + position;
+          toggleCurrentPlayer();
+        }
       }
     });
     return div;
@@ -170,7 +186,7 @@ const displayController = (() => {
     }
   };
 
-  return { printBoard, displayBoardPage };
+  return { printBoard, displayBoardPage, displayWinner };
 })();
 
 displayController.displayBoardPage(gameBoard.getBoard());
