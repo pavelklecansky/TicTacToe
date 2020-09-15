@@ -1,8 +1,31 @@
+let isGameStarted = false;
+let firstPlayer;
+let secondPlayer;
+let currentPlayer;
+
+const toggleCurrentPlayer = () => {
+  if (currentPlayer === firstPlayer) {
+    currentPlayer = secondPlayer;
+  } else {
+    currentPlayer = firstPlayer;
+  }
+};
+
+const startButton = document.querySelector("#start-button");
+startButton.addEventListener("click", () => {
+  let player1Name = document.querySelector("#player1-input")?.value;
+  let player2Name = document.querySelector("#player2-input")?.value;
+  firstPlayer = Player(player1Name, "X");
+  secondPlayer = Player(player2Name, "O");
+  currentPlayer = firstPlayer;
+  isGameStarted = true;
+});
+
 const Player = (name, symbol) => {
   const getName = () => name;
   const getSymbol = () => symbol;
 
-  const setMark = (coordinets, board) => board.setMark(coordinets, symbol);
+  const setMark = (position, board) => board.setMark(position, symbol);
 
   return { getName, getSymbol, setMark };
 };
@@ -114,6 +137,8 @@ const gameBoard = (() => {
 })();
 
 const displayController = (() => {
+  const grid = document.querySelector(".tic-tac-toe-grid");
+
   const printBoard = (board) => {
     console.log("Board:");
     board.map((inner) => {
@@ -121,19 +146,31 @@ const displayController = (() => {
     });
   };
 
-  return { printBoard };
+  const createDiv = (innerText, position) => {
+    const div = document.createElement("div");
+    div.innerText = innerText;
+    div.addEventListener("click", () => {
+      if (isGameStarted) {
+        div.innerHTML = currentPlayer.getSymbol() + position;
+        currentPlayer.setMark(position, gameBoard);
+        toggleCurrentPlayer();
+      }
+    });
+    return div;
+  };
+
+  const displayBoardPage = (board) => {
+    let position = 0;
+    for (let i = 0; i < board.length; i++) {
+      let inner = board[i];
+      for (let j = 0; j < inner.length; j++) {
+        position++;
+        grid.appendChild(createDiv(inner[j], position));
+      }
+    }
+  };
+
+  return { printBoard, displayBoardPage };
 })();
 
-const playerX = Player("Pavel", "X");
-const playerO = Player("Nepavel", "O");
-playerX.setMark(6, gameBoard);
-playerO.setMark(4, gameBoard);
-playerO.setMark(5, gameBoard);
-playerO.setMark(1, gameBoard);
-playerX.setMark(2, gameBoard);
-playerO.setMark(3, gameBoard);
-playerX.setMark(7, gameBoard);
-playerO.setMark(8, gameBoard);
-playerX.setMark(9, gameBoard);
-
-displayController.printBoard(gameBoard.getBoard());
+displayController.displayBoardPage(gameBoard.getBoard());
