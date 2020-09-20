@@ -6,6 +6,7 @@ let winner;
 
 let player1Input = document.querySelector("#player1-input");
 let player2Input = document.querySelector("#player2-input");
+const startButton = document.querySelector("#start-button");
 
 const toggleCurrentPlayer = () => {
   if (currentPlayer === firstPlayer) {
@@ -30,7 +31,6 @@ const restartGame = () => {
   player2Input.disabled = false;
 };
 
-const startButton = document.querySelector("#start-button");
 startButton.addEventListener("click", () => {
   let player1ValueNotEmpty = player1Input.value.length !== 0;
   let player2ValueNotEmpty = player2Input.value.length !== 0;
@@ -195,7 +195,7 @@ const displayController = (() => {
     if (winner === "Tie") {
       winnerText.textContent = "It's TIE";
     } else {
-      winnerText.textContent = winnerText.textContent + winner.getName();
+      winnerText.textContent = "The winner is " + winner.getName();
     }
 
     modal.classList.toggle("closed");
@@ -229,6 +229,10 @@ const displayController = (() => {
           div.appendChild(svg);
           toggleCurrentPlayer();
         }
+      } else {
+        console.log("Click");
+        startButton.classList.add("scale");
+        setTimeout(() => startButton.classList.remove("scale"), 500);
       }
     });
     return div;

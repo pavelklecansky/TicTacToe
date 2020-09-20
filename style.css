@@ -95,7 +95,7 @@ button {
 }
 
 .title {
-  font-size: 3em;
+  font-size: 4em;
   text-align: center;
   margin-bottom: 0.1em;
   margin-top: 0.2em;
@@ -135,14 +135,26 @@ button {
 }
 
 .tic-tac-toe-grid div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border: 1px solid black;
 }
 
 .tic-tac-toe-grid img {
-  width: 100%;
+  width: 90%;
 }
 
 .start-buttonDiv {
   text-align: center;
   margin-bottom: 1rem;
+}
+
+#start-button {
+  transition: all 0.5s ease-in-out;
+
+}
+
+.scale {
+  transform: scale(1.2);
 }
