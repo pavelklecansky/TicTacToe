@@ -2,6 +2,10 @@ let isGameStarted = false;
 let firstPlayer;
 let secondPlayer;
 let currentPlayer;
+let winner;
+
+let player1Input = document.querySelector("#player1-input");
+let player2Input = document.querySelector("#player2-input");
 
 const toggleCurrentPlayer = () => {
   if (currentPlayer === firstPlayer) {
@@ -11,14 +15,36 @@ const toggleCurrentPlayer = () => {
   }
 };
 
+const restartGame = () => {
+  startButton.textContent = "Start";
+  gameBoard.restartTheBoard();
+  firstPlayer = null;
+  secondPlayer = null;
+  currentPlayer = null;
+  winner = null;
+  displayController.displayBoardPage(gameBoard.getBoard());
+  isGameStarted = false;
+  player1Input.value = "";
+  player2Input.value = "";
+};
+
 const startButton = document.querySelector("#start-button");
 startButton.addEventListener("click", () => {
-  let player1Name = document.querySelector("#player1-input")?.value;
-  let player2Name = document.querySelector("#player2-input")?.value;
-  firstPlayer = Player(player1Name, "X");
-  secondPlayer = Player(player2Name, "O");
-  currentPlayer = firstPlayer;
-  isGameStarted = true;
+  if (player1Input.value.length !== 0 && player2Input.value.length !== 0) {
+    if (isGameStarted) {
+      restartGame();
+    } else {
+      let player1Name = player1Input?.value;
+      let player2Name = player2Input?.value;
+      firstPlayer = Player(player1Name, "X");
+      secondPlayer = Player(player2Name, "O");
+      currentPlayer = firstPlayer;
+      isGameStarted = true;
+      startButton.textContent = "Restart";
+    }
+  } else {
+    alert("empty");
+  }
 });
 
 const Player = (name, symbol) => {
@@ -42,6 +68,14 @@ const gameBoard = (() => {
 
   const winningPosition = ["123", "456", "789", "147", "258", "369", "159", "357"];
 
+  const restartTheBoard = () => {
+    board.forEach((inner) => {
+      inner.fill("");
+      xSymbolPositons = [];
+      oSymbolPositons = [];
+    });
+  };
+
   const getBoard = () => board;
 
   const isBoardFull = () => xSymbolPositons.length + oSymbolPositons.length === 9;
@@ -53,13 +87,15 @@ const gameBoard = (() => {
         return xSymbolPositons.indexOf(el) !== -1;
       });
       if (xWin) {
-        return "X";
+        winner = currentPlayer;
+        displayController.displayWinner(winner);
       }
       let oWin = arrayOfWinning.every((el) => {
         return oSymbolPositons.indexOf(el) !== -1;
       });
       if (oWin) {
-        return "O";
+        winner = currentPlayer;
+        displayController.displayWinner(winner);
       }
     }
 
@@ -128,30 +164,29 @@ const gameBoard = (() => {
     }
 
     board[x][y] = symbol;
-    displayController.displayWinner(checkForWin());
+    checkForWin();
     return true;
   };
 
-  return { getBoard, setMark };
+  return { getBoard, setMark, restartTheBoard };
 })();
 
 const displayController = (() => {
   const grid = document.querySelector(".tic-tac-toe-grid");
 
-  const displayWinner = (winSequence) => {
-    if (winSequence) {
-      switch (winSequence) {
-        case "X":
-          alert("Winner is X");
-          break;
-        case "O":
-          alert("Winner is O");
-          break;
-        default:
-          alert("It a tie");
-          break;
-      }
-    }
+  const displayWinner = (winner) => {
+    const modal = document.querySelector("#modal");
+    const modalOverlay = document.querySelector("#modal-overlay");
+    const restartButton = document.querySelector("#restart-button");
+    const winnerText = document.querySelector("#winner-text");
+    winnerText.textContent = winnerText.textContent + winner.getName();
+    modal.classList.toggle("closed");
+    modalOverlay.classList.toggle("closed");
+    restartButton.addEventListener("click", function () {
+      modal.classList.add("closed");
+      modalOverlay.classList.add("closed");
+      restartGame();
+    });
   };
 
   const printBoard = (board) => {
@@ -176,6 +211,7 @@ const displayController = (() => {
   };
 
   const displayBoardPage = (board) => {
+    grid.innerHTML = "";
     let position = 0;
     for (let i = 0; i < board.length; i++) {
       let inner = board[i];
