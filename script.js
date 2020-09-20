@@ -26,11 +26,17 @@ const restartGame = () => {
   isGameStarted = false;
   player1Input.value = "";
   player2Input.value = "";
+  player1Input.disabled = false;
+  player2Input.disabled = false;
 };
 
 const startButton = document.querySelector("#start-button");
 startButton.addEventListener("click", () => {
-  if (player1Input.value.length !== 0 && player2Input.value.length !== 0) {
+  let player1ValueNotEmpty = player1Input.value.length !== 0;
+  let player2ValueNotEmpty = player2Input.value.length !== 0;
+  if (player1ValueNotEmpty && player2ValueNotEmpty) {
+    player1Input.classList.remove("glowing-border");
+    player2Input.classList.remove("glowing-border");
     if (isGameStarted) {
       restartGame();
     } else {
@@ -40,10 +46,17 @@ startButton.addEventListener("click", () => {
       secondPlayer = Player(player2Name, "O");
       currentPlayer = firstPlayer;
       isGameStarted = true;
+      player1Input.disabled = true;
+      player2Input.disabled = true;
       startButton.textContent = "Restart";
     }
   } else {
-    alert("empty");
+    if (!player1ValueNotEmpty) {
+      player1Input.classList.add("glowing-border");
+    }
+    if (!player2ValueNotEmpty) {
+      player2Input.classList.add("glowing-border");
+    }
   }
 });
 
@@ -99,8 +112,8 @@ const gameBoard = (() => {
       }
     }
 
-    if (isBoardFull()) {
-      return "Tie";
+    if (isBoardFull() && !winner) {
+      displayController.displayWinner("Tie");
     }
   };
 
@@ -179,7 +192,12 @@ const displayController = (() => {
     const modalOverlay = document.querySelector("#modal-overlay");
     const restartButton = document.querySelector("#restart-button");
     const winnerText = document.querySelector("#winner-text");
-    winnerText.textContent = winnerText.textContent + winner.getName();
+    if (winner === "Tie") {
+      winnerText.textContent = "It's TIE";
+    } else {
+      winnerText.textContent = winnerText.textContent + winner.getName();
+    }
+
     modal.classList.toggle("closed");
     modalOverlay.classList.toggle("closed");
     restartButton.addEventListener("click", function () {
@@ -202,7 +220,13 @@ const displayController = (() => {
     div.addEventListener("click", () => {
       if (isGameStarted) {
         if (currentPlayer.setMark(position, gameBoard)) {
-          div.innerHTML = currentPlayer.getSymbol() + position;
+          const svg = document.createElement("img");
+          if (currentPlayer.getSymbol() === "X") {
+            svg.src = ".\\icon\\x-mark.svg";
+          } else {
+            svg.src = ".\\icon\\circle.svg";
+          }
+          div.appendChild(svg);
           toggleCurrentPlayer();
         }
       }
