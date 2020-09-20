@@ -152,9 +152,48 @@ button {
 
 #start-button {
   transition: all 0.5s ease-in-out;
-
 }
 
 .scale {
   transform: scale(1.2);
+}
+
+@media only screen and (max-width: 1400px) {
+
+
+  .tic-tac-toe-grid {
+    max-width: 50vw;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+
+
+  .tic-tac-toe-grid {
+    max-width: 60vw;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    font-size: 11px;
+  }
+
+  .tic-tac-toe-grid {
+    max-width: 80vw;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .input {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2em;
+  }
+  .input div {
+    margin-top: 1em;
+  }
+  .tic-tac-toe-grid {
+    max-width: 80vw;
+  }
 }
